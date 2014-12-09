@@ -9,7 +9,10 @@
 
 %% Exports
 %%
-%% These exports
+%% Marks all function within the list as accessible from outside the module.
+%% All ejabberd auth modules need the listed functions to be exported in order to
+%% work properly.
+%%
 -export([start/1,
   plain_password_required/0,
   store_type/0,
@@ -29,23 +32,66 @@
   remove_user/3
 ]).
 
+%%%------------------------------------------------
+%%% API functions we're going to implement
+%%%------------------------------------------------
+
+%%
+%% When ejabberd is started, this method is called to start
+%% the auth module.
+%% You can do initialization code here if you have to,
+%% just return with ok in the end.
+%%
 start(_Server) ->
   ok.
 
+%%
+%% If this module only accepts SASL PLAIN, specify
+%% true here.
+%%
 plain_password_required() ->
   true.
 
+%%
+%% one of plain | scram | external
+%% Usually you'll want to return `external` or `plain`
+%%
 store_type() ->
   external.
 
+%%
+%% This is the main function which checks
+%% whether the supplied password matches for the supplied user.
+%%
+%% @spec (User, Server, Password) -> true | false | {error, Error}
 check_password(_User, _Server, _Password) ->
   true.
 
+%%
+%% Checks password when a digest was supplied. Usually for external
+%% authentication methods over TLS you don't really have to care about this.. ;-)
+%%
+%% @spec (User::string(), Server::string(), Password::string(),
+%%        Digest::string(), DigestGen::function()) ->
 check_password(User, Server, Password, _StreamID, _Digest) ->
   check_password(User, Server, Password).
 
+%%
+%% Whenever a message is being sent, this method is called
+%% in order to make sure the recipient is existing.
+%% Usually it's best to have such a method on e.g. your API
+%% and check this.
+%% It might be also not too bad if the check is expensive, that
+%% you cache it for a certain time.
+%%
 is_user_exists(User, Server) ->
   true.
+
+%%%------------------------------------------------
+%%% Not implemented API functions
+%%% You can but don't necessarily have to implement
+%%% them.
+%%%------------------------------------------------
 
 set_password(_User, _Server, _Password) ->
   {error, not_implemented}.
