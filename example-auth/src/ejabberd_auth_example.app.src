@@ -1,0 +1,8 @@
+{application, ejabberd_auth_example,
+ [
+  {vsn, git},
+  {description, "Ejabberd authentication example"},
+  {applications, [kernel, stdlib, ejabberd]},
+  {registered, []},
+  {env, []}
+ ]}.
